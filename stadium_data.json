@@ -1,0 +1,96 @@
+{
+  "stadium": {
+    "name": "New York New Jersey Stadium (MetLife)",
+    "event": "FIFA World Cup 2026",
+    "capacity": 82500,
+    "wifi": {
+      "network": "FIFA2026_FreeWiFi",
+      "password": "Open network - no password needed"
+    },
+    "helpline": "+1-800-FIFA-2026 (Stadium Help Desk, Gate B)"
+  },
+  "zones": ["North Stand", "South Stand", "East Stand", "West Stand", "VIP Lounge"],
+  "gates": [
+    {"id": "A", "zone": "North Stand", "serves": "Sections 101-115", "landmark": "Near main parking P1, big FIFA trophy statue"},
+    {"id": "B", "zone": "East Stand", "serves": "Sections 116-130", "landmark": "Metro / rail station side, Help Desk here"},
+    {"id": "C", "zone": "South Stand", "serves": "Sections 131-145", "landmark": "Fan Zone and big screen side"},
+    {"id": "D", "zone": "West Stand", "serves": "Sections 146-160", "landmark": "Team bus entry side, media centre"},
+    {"id": "E", "zone": "VIP Lounge", "serves": "VIP + Hospitality boxes", "landmark": "Separate VIP drop-off lane"}
+  ],
+  "food_stalls": [
+    {"name": "Spice Route", "cuisine": "Indian (veg + non-veg)", "zone": "North Stand", "near": "Gate A concourse"},
+    {"name": "Taco Fiesta", "cuisine": "Mexican", "zone": "South Stand", "near": "Gate C concourse"},
+    {"name": "Burger Arena", "cuisine": "American fast food", "zone": "East Stand", "near": "Gate B concourse"},
+    {"name": "Green Bowl", "cuisine": "Vegan and salads", "zone": "West Stand", "near": "Gate D concourse"},
+    {"name": "Chai & Coffee Point", "cuisine": "Beverages and snacks", "zone": "North Stand", "near": "Section 108 stairs"},
+    {"name": "Pizza Corner", "cuisine": "Italian", "zone": "East Stand", "near": "Section 122"},
+    {"name": "Halal Grill", "cuisine": "Halal certified", "zone": "South Stand", "near": "Section 137"},
+    {"name": "VIP Dining", "cuisine": "Multi-cuisine buffet", "zone": "VIP Lounge", "near": "Hospitality level 3"}
+  ],
+  "washrooms": [
+    {"zone": "North Stand", "location": "Behind Section 105 and 112", "accessible": true},
+    {"zone": "East Stand", "location": "Behind Section 120 and 127", "accessible": true},
+    {"zone": "South Stand", "location": "Behind Section 134 and 141", "accessible": false},
+    {"zone": "South Stand", "location": "Near Gate C entry", "accessible": true},
+    {"zone": "West Stand", "location": "Behind Section 150 and 156", "accessible": true},
+    {"zone": "VIP Lounge", "location": "Inside lounge, level 3", "accessible": true}
+  ],
+  "first_aid": [
+    {"zone": "North Stand", "location": "Room N-1, beside Gate A security check"},
+    {"zone": "East Stand", "location": "Room E-1, next to Help Desk at Gate B"},
+    {"zone": "South Stand", "location": "Room S-1, behind Section 138"},
+    {"zone": "West Stand", "location": "Room W-1, near media centre entry"}
+  ],
+  "parking": [
+    {"lot": "P1", "for": "General public (cars)", "zone": "North Stand", "capacity": 2500},
+    {"lot": "P2", "for": "General public (cars + bikes)", "zone": "South Stand", "capacity": 1800},
+    {"lot": "P3", "for": "Buses and shuttles", "zone": "East Stand", "capacity": 400},
+    {"lot": "P4", "for": "VIP and accessible parking", "zone": "West Stand", "capacity": 600}
+  ],
+  "exits": [
+    {"id": "X1", "zone": "North Stand", "note": "Emergency exit near Section 103"},
+    {"id": "X2", "zone": "North Stand", "note": "Emergency exit near Section 113"},
+    {"id": "X3", "zone": "East Stand", "note": "Emergency exit near Section 124"},
+    {"id": "X4", "zone": "South Stand", "note": "Emergency exit near Section 139"},
+    {"id": "X5", "zone": "West Stand", "note": "Emergency exit near Section 152"},
+    {"id": "X6", "zone": "West Stand", "note": "Emergency exit near media centre"}
+  ],
+  "water_stations": [
+    {"zone": "North Stand", "location": "Free refill point, Section 107"},
+    {"zone": "East Stand", "location": "Free refill point, Section 121"},
+    {"zone": "South Stand", "location": "Free refill point, Section 136"},
+    {"zone": "West Stand", "location": "Free refill point, Section 151"},
+    {"zone": "VIP Lounge", "location": "Inside lounge, level 3"}
+  ],
+  "recycling_points": [
+    {"zone": "North Stand", "location": "Beside Gate A, colour-coded bins"},
+    {"zone": "East Stand", "location": "Beside Gate B, colour-coded bins"},
+    {"zone": "South Stand", "location": "Fan Zone entry, colour-coded bins"},
+    {"zone": "West Stand", "location": "Beside Gate D, colour-coded bins"}
+  ],
+  "atms": [
+    {"zone": "North Stand", "location": "Gate A concourse"},
+    {"zone": "East Stand", "location": "Next to Help Desk, Gate B"},
+    {"zone": "South Stand", "location": "Fan Zone, near big screen"}
+  ],
+  "accessibility": {
+    "wheelchair_ramps": "All gates (A to E) have ramps. Dedicated wheelchair seating in Sections 110, 125, 140 and 155.",
+    "assistance_desk": "Accessibility Help Desk at Gate B - free wheelchair on request.",
+    "accessible_parking": "Lot P4 (West side) - closest to Gate D ramp.",
+    "sensory_room": "Quiet sensory room on Level 2, North Stand, for fans who need a calm space.",
+    "sign_language": "Big screens show live captions. Sign language volunteers available at Gate B desk."
+  },
+  "other": {
+    "prayer_room": "Multi-faith prayer room, Level 2, East Stand (near Section 119)",
+    "lost_and_found": "Help Desk at Gate B, East Stand",
+    "merchandise": [
+      {"name": "Official FIFA Store", "zone": "North Stand", "near": "Gate A outer plaza"},
+      {"name": "Fan Kiosk", "zone": "South Stand", "near": "Fan Zone"}
+    ]
+  },
+  "matches": [
+    {"match": "Semi Final 1", "teams": "Winner QF1 vs Winner QF2", "date": "2026-07-14", "time": "20:00 local", "status": "Completed"},
+    {"match": "Semi Final 2", "teams": "Winner QF3 vs Winner QF4", "date": "2026-07-15", "time": "20:00 local", "status": "Completed"},
+    {"match": "FIFA World Cup 2026 FINAL", "teams": "Finalist 1 vs Finalist 2", "date": "2026-07-19", "time": "15:00 local", "status": "Upcoming - gates open 11:00"}
+  ]
+}
