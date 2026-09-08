@@ -18,8 +18,9 @@ import json
 import os
 import random
 import re
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable
+from typing import Any
 
 # --------------------------------------------------------------------- data
 DATA_PATH: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stadium_data.json")

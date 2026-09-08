@@ -134,10 +134,9 @@ with tab_chat:
         with st.chat_message("assistant", avatar="🏟️"):
             st.markdown(reply)
 
-    if st.session_state.messages:
-        if st.button("🧹 Clear chat", help="Remove all messages from this conversation"):
-            st.session_state.messages = []
-            st.rerun()
+    if st.session_state.messages and st.button("🧹 Clear chat", help="Remove all messages from this conversation"):
+        st.session_state.messages = []
+        st.rerun()
 
 # ================================================================= TAB 2: NAVIGATION
 FACILITY_OPTIONS: list[str] = [
@@ -279,7 +278,7 @@ with tab_match:
 
     final = DATA["matches"][-1]
     final_date = dt.date.fromisoformat(final["date"])
-    days_left = (final_date - dt.date.today()).days
+    days_left = (final_date - dt.datetime.now(dt.timezone.utc).date()).days
     if days_left > 0:
         st.info(f"⚽ **{final['match']}** in **{days_left} day(s)** — "
                 f"{final['date']} at {final['time']}. Gates open 11:00, come early!")

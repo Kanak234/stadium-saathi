@@ -7,8 +7,18 @@ zone-aware answers, fallbacks and localisation of every response builder.
 
 import pytest
 
-from assistant import (DATA, LANGS, MAX_QUERY_LEN, _extract_gate, _zone_items,
-                       answer, detect_intent, quick_suggestions, sanitize)
+from assistant import (
+    DATA,
+    LANGS,
+    MAX_QUERY_LEN,
+    _extract_gate,
+    _zone_items,
+    answer,
+    detect_intent,
+    quick_suggestions,
+    sanitize,
+)
+
 
 # ------------------------------------------------------------- sanitization
 def test_sanitize_strips_control_chars():
