@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stadium-saathi"
+version = "1.0.0"
+description = "Smart Stadium Operations & Tournament Operations Multilingual Assistant"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "streamlit>=1.37"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.4.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["stadium_saathi*"]
+
+[tool.pytest.ini_options]
+testpaths = ["."]
+pythonpath = ["."]
