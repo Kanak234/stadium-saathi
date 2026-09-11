@@ -1,13 +1,55 @@
 name: CI
-on: [push, pull_request]
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with: { python-version: "3.12" }
-      - run: pip install pytest ruff && if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - run: python -m compileall -q .
-      - run: ruff check .
-      - run: pytest -q
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel build
+          pip install ruff pytest pytest-cov
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install -e .
+
+      - name: Bytecode compilation check
+        run: python -m compileall -q .
+
+      - name: Lint with Ruff
+        run: ruff check .
+
+      - name: Run test suite with coverage gate
+        run: pytest
+
+      - name: Verify CLI entry point
+        run: |
+          stadium-saathi --version
+          stadium-saathi --help
+          stadium-saathi --query "where is gate 3"
+          stadium-saathi -q "गेट 2 कहाँ है" -l "हिंदी (Hindi)"
+
+      - name: Build wheel and source distribution
+        run: python -m build

@@ -13,17 +13,35 @@ No external API, no database, no network calls at runtime.
 
 from __future__ import annotations
 
+import argparse
 import difflib
 import json
 import os
 import random
 import re
+import sys
 from collections.abc import Callable
 from functools import lru_cache
 from typing import Any
 
+__version__ = "1.0.0"
+
 # --------------------------------------------------------------------- data
-DATA_PATH: str = os.path.join(os.path.dirname(os.path.abspath(__file__)), "stadium_data.json")
+def _find_data_path() -> str:
+    """Find the path to stadium_data.json across diverse installation environments."""
+    candidates = [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "stadium_data.json"),
+        os.path.join(sys.prefix, "stadium_data.json"),
+        os.path.join(sys.prefix, "data", "stadium_data.json"),
+        os.path.join(os.getcwd(), "stadium_data.json"),
+    ]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+    return candidates[0]
+
+
+DATA_PATH: str = _find_data_path()
 
 def _load_data(path: str = DATA_PATH) -> dict[str, Any]:
     """Load and validate the stadium knowledge base.
@@ -214,7 +232,7 @@ T: dict[str, dict[str, str]] = {
 
 def _fmt_list(lines: list[str]) -> str:
     """Render a list of strings as markdown bullets."""
-    return "\n".join("• " + l for l in lines)
+    return "\n".join("• " + line for line in lines)
 
 # --------------------------------------------- intent → answer builders
 def _ans_gate(q: str, lk: str, zone: str) -> str:
@@ -378,11 +396,11 @@ def _ans_prayer(q: str, lk: str, zone: str) -> str:
 
 
 def _ans_lost(q: str, lk: str, zone: str) -> str:
-    l = DATA["other"]["lost_and_found"]
+    loc = DATA["other"]["lost_and_found"]
     return {
-        "en": f"For lost items, go to the **Lost & Found**: {l}. Carry your ticket/ID for verification.",
-        "hi": f"खोया सामान के लिए **Lost & Found** जाएं: {l}। टिकट/ID साथ रखें।",
-        "hn": f"Khoya samaan ke liye **Lost & Found** jaayein: {l}. Ticket/ID saath rakhein.",
+        "en": f"For lost items, go to the **Lost & Found**: {loc}. Carry your ticket/ID for verification.",
+        "hi": f"खोया सामान के लिए **Lost & Found** जाएं: {loc}। टिकट/ID साथ रखें।",
+        "hn": f"Khoya samaan ke liye **Lost & Found** jaayein: {loc}. Ticket/ID saath rakhein.",
     }[lk]
 
 
@@ -437,8 +455,45 @@ def quick_suggestions(lang: str = "English") -> list[str]:
     }[_lang_key(lang)]
 
 
-if __name__ == "__main__":  # manual smoke test
-    for t in ["gate 3 kahan hai", "khana", "शौचालय", "wheelchair", "final kab hai",
-              "wifi", "emergency", "paani", "hello", "xyz gibberish"]:
-        r, i = answer(t, "Hinglish", "South Stand")
-        print(f"[{i}] {t} -> {r[:70]}")
+def cli(argv: list[str] | None = None) -> int:
+    """Command-line entry point for StadiumSaathi offline assistant."""
+    parser = argparse.ArgumentParser(
+        prog="stadium-saathi",
+        description="StadiumSaathi — Smart Stadium & Tournament Operations Assistant (Offline NLU)",
+    )
+    parser.add_argument(
+        "-q", "--query",
+        type=str,
+        help="Query to ask the assistant (e.g. 'where is gate 3', 'खाना कहाँ मिलेगा')",
+    )
+    parser.add_argument(
+        "-l", "--lang",
+        type=str,
+        default="English",
+        choices=LANGS,
+        help="Language for response (default: English)",
+    )
+    parser.add_argument(
+        "-z", "--zone",
+        type=str,
+        default="North Stand",
+        help="Current seating zone (default: 'North Stand')",
+    )
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+    )
+    args = parser.parse_args(argv)
+
+    if not args.query:
+        parser.print_help()
+        return 0
+
+    reply, intent = answer(args.query, lang=args.lang, user_zone=args.zone)
+    print(f"[{intent}] {reply}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(cli())
