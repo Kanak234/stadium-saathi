@@ -5,15 +5,23 @@ Covers: sanitization, intent detection (3 languages), entity extraction,
 zone-aware answers, fallbacks and localisation of every response builder.
 """
 
+import json
+import os
+import sys
+
 import pytest
 
 from assistant import (
     DATA,
     LANGS,
     MAX_QUERY_LEN,
+    __version__,
     _extract_gate,
+    _find_data_path,
+    _load_data,
     _zone_items,
     answer,
+    cli,
     detect_intent,
     quick_suggestions,
     sanitize,
@@ -126,3 +134,121 @@ def test_quick_suggestions_localised():
     for lang in LANGS:
         s = quick_suggestions(lang)
         assert len(s) == 4 and all(isinstance(x, str) for x in s)
+
+
+# ------------------------------------------------------------- greetings & thanks
+def test_greeting_and_thanks_answers():
+    reply_greet, intent_greet = answer("hello", "English", "North Stand")
+    assert intent_greet == "greeting"
+    assert "StadiumSaathi" in reply_greet
+
+    reply_thanks, intent_thanks = answer("dhanyawad", "हिंदी (Hindi)", "East Stand")
+    assert intent_thanks == "thanks"
+    assert "मदद" in reply_thanks or "स्वागत" in reply_thanks
+
+
+def test_detect_intent_empty():
+    intent, score = detect_intent("")
+    assert intent is None
+    assert score == 0
+
+
+def test_detect_intent_tie_break_non_priority():
+    # Both "wifi" and "merch" have single word triggers.
+    # When queries trigger non-priority intents equally:
+    intent, score = detect_intent("wifi jersey")
+    assert intent in ("wifi", "merch")
+    assert score > 0
+
+
+# ------------------------------------------------------------- food cuisine filters
+def test_food_cuisine_filtering():
+    # Query with pizza keyword
+    reply_pizza, _ = answer("i want pizza", "English", "North Stand")
+    assert "Pizza" in reply_pizza
+
+    # Query with burger keyword
+    reply_burger, _ = answer("any burger stall", "English", "West Stand")
+    assert "Burger" in reply_burger
+
+    # Query with taco/mexican keyword
+    reply_taco, _ = answer("tacos", "English", "South Stand")
+    assert "Taco" in reply_taco
+
+
+# ------------------------------------------------------------- data loading & paths
+def test_load_data_missing_file():
+    with pytest.raises(RuntimeError, match="could not be loaded"):
+        _load_data("/path/to/nonexistent/stadium_data.json")
+
+
+def test_load_data_malformed_json(tmp_path):
+    bad_json_path = tmp_path / "corrupted.json"
+    bad_json_path.write_text("{malformed: json", encoding="utf-8")
+    with pytest.raises(RuntimeError, match="could not be loaded"):
+        _load_data(str(bad_json_path))
+
+
+def test_load_data_missing_section(tmp_path):
+    incomplete_path = tmp_path / "missing_section.json"
+    incomplete_path.write_text(json.dumps({"stadium": {}, "zones": []}), encoding="utf-8")
+    with pytest.raises(RuntimeError, match="missing required section"):
+        _load_data(str(incomplete_path))
+
+
+def test_find_data_path_resolves():
+    path = _find_data_path()
+    assert os.path.isfile(path)
+    assert path.endswith("stadium_data.json")
+
+
+# ------------------------------------------------------------- CLI tests
+def test_cli_help(capsys):
+    with pytest.raises(SystemExit) as exc:
+        cli(["--help"])
+    assert exc.value.code == 0
+    out = capsys.readouterr().out
+    assert "stadium-saathi" in out
+    assert "--query" in out
+
+
+def test_cli_version(capsys):
+    with pytest.raises(SystemExit) as exc:
+        cli(["--version"])
+    assert exc.value.code == 0
+    out = capsys.readouterr().out
+    assert __version__ in out
+
+
+def test_cli_query_gate(capsys):
+    code = cli(["--query", "gate 3", "--lang", "English", "--zone", "South Stand"])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "[gate]" in out
+    assert "Gate C" in out
+
+
+def test_cli_query_devanagari(capsys):
+    code = cli(["-q", "गेट 2 कहाँ है", "-l", "हिंदी (Hindi)", "-z", "East Stand"])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "[gate]" in out
+    assert "गेट B" in out
+
+
+def test_cli_no_query_displays_help(capsys):
+    code = cli([])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "usage: stadium-saathi" in out
+
+
+def test_main_module_execution(monkeypatch, capsys):
+    import runpy
+    monkeypatch.setattr(sys, "argv", ["assistant.py", "--query", "gate 3"])
+    with pytest.raises(SystemExit) as exc:
+        runpy.run_path("assistant.py", run_name="__main__")
+    assert exc.value.code == 0
+    out = capsys.readouterr().out
+    assert "[gate]" in out
+    assert "Gate C" in out
